@@ -1,10 +1,10 @@
 package com.zippy.api.service;
 
 import com.zippy.api.document.Vehicle;
+import com.zippy.api.exception.VehicleNotFoundException;
 import com.zippy.api.repository.VehicleRepository;
 import org.bson.types.ObjectId;
 import org.springframework.stereotype.Service;
-import com.zippy.api.exception.VehicleNotFoundException;
 
 import java.util.List;
 

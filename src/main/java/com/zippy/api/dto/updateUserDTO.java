@@ -1,9 +1,6 @@
 package com.zippy.api.dto;
 
 import com.zippy.api.models.Address;
-import com.zippy.api.models.City;
-import com.zippy.api.models.Country;
-import com.zippy.api.models.State;
 import lombok.Getter;
 import lombok.Setter;
 

@@ -21,7 +21,7 @@ import java.time.LocalDateTime;
 public class Trip {
 
     @Id
-    private  ObjectId id;
+    private ObjectId id;
     private ObjectId userId;
     private ObjectId vehicleId;
     private ObjectId startStationId;

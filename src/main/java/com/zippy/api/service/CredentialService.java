@@ -12,7 +12,7 @@ public class CredentialService implements UserDetailsService {
     private final CredentialRepository credentialRepository;
     private final UserService userService;
 
-    public CredentialService(CredentialRepository credentialRepository,  UserService userService) {
+    public CredentialService(CredentialRepository credentialRepository, UserService userService) {
         this.credentialRepository = credentialRepository;
         this.userService = userService;
     }
@@ -33,7 +33,7 @@ public class CredentialService implements UserDetailsService {
         credentialRepository.deleteById(credential.getId());
     }
 
-    public Credential updateCredential(Credential credential){
+    public Credential updateCredential(Credential credential) {
         return credentialRepository.save(credential);
     }
 }

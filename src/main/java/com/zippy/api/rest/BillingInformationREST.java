@@ -19,26 +19,26 @@ public class BillingInformationREST {
         this.billingInformationService = billingInformationService;
     }
 
-    @GetMapping ("/get")
+    @GetMapping("/get")
     @PreAuthorize("#credential.userId == #user.id")
-    public ResponseEntity<?> getBillingInformation(@AuthenticationPrincipal Credential credential, @RequestBody User user){
+    public ResponseEntity<?> getBillingInformation(@AuthenticationPrincipal Credential credential, @RequestBody User user) {
         return ResponseEntity.ok(billingInformationService.getBillingInformation(user.getBillingInformationId()));
     }
 
-    @PostMapping ("/add-card")
+    @PostMapping("/add-card")
     @PreAuthorize("#credential.userId == #newCardDTO.userId")
     public ResponseEntity<?> addNewCard(@AuthenticationPrincipal Credential credential,
-                                        @RequestBody UpdateBillingInformationDTO newCardDTO){
+                                        @RequestBody UpdateBillingInformationDTO newCardDTO) {
         BillingInformation billingInformation = billingInformationService
                 .getBillingInformation(newCardDTO.getBillingInformationId());
         billingInformation.getCards().add(newCardDTO.getNewCard());
         return ResponseEntity.ok(billingInformationService.saveBillingInformation(billingInformation));
     }
 
-    @PostMapping ("/recharge")
+    @PostMapping("/recharge")
     @PreAuthorize("#credential.userId == #newBalanceDTO.userId")
     public ResponseEntity<?> RechargeMoney(@AuthenticationPrincipal Credential credential,
-                                           @RequestBody UpdateBillingInformationDTO newBalanceDTO){
+                                           @RequestBody UpdateBillingInformationDTO newBalanceDTO) {
         BillingInformation billingInformation = billingInformationService
                 .getBillingInformation(newBalanceDTO.getBillingInformationId());
         billingInformation.getWallet().setBalance(billingInformation.getWallet().getBalance().add(newBalanceDTO.getMoney()));
@@ -48,7 +48,7 @@ public class BillingInformationREST {
     @PostMapping("/add-transaction")
     @PreAuthorize("#credential.userId == #newTransactionDTO.userId")
     public ResponseEntity<?> addTransaction(@AuthenticationPrincipal Credential credential,
-                                           @RequestBody UpdateBillingInformationDTO newTransactionDTO){
+                                            @RequestBody UpdateBillingInformationDTO newTransactionDTO) {
         BillingInformation billingInformation = billingInformationService
                 .getBillingInformation(newTransactionDTO.getBillingInformationId());
         billingInformation.getWallet().getTransactions().add(newTransactionDTO.getTransaction());

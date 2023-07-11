@@ -28,9 +28,9 @@ public class UserService {
         BillingInformation billingInformation = new BillingInformation();
         billingInformation.setWallet(new Wallet());
         billingInformation.setId(new ObjectId());
-        if(userDTO.getCards() == null){
+        if (userDTO.getCards() == null) {
             billingInformation.setCards(null);
-        }else {
+        } else {
             billingInformation.setCards(userDTO.getCards());
         }
 

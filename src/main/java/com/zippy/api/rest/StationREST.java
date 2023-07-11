@@ -46,6 +46,7 @@ public class StationREST {
         return ResponseEntity.ok(stationService.allStations());
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/{id}/vehicles")
     public ResponseEntity<?> getVehiclesByStationId(@PathVariable ObjectId id) {
         return ResponseEntity.ok(stationService.getVehiclesByStationId(id));

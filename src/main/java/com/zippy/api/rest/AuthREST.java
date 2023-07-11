@@ -3,7 +3,9 @@ package com.zippy.api.rest;
 import com.zippy.api.constants.Roles;
 import com.zippy.api.document.Credential;
 import com.zippy.api.document.RefreshToken;
-import com.zippy.api.dto.*;
+import com.zippy.api.dto.LoginDTO;
+import com.zippy.api.dto.SignupDTO;
+import com.zippy.api.dto.TokenDTO;
 import com.zippy.api.jwt.JwtHelper;
 import com.zippy.api.repository.CredentialRepository;
 import com.zippy.api.repository.RefreshTokenRepository;
@@ -93,12 +95,12 @@ public class AuthREST {
         return getResponseEntity(
                 credentialRepository.save(
                         new Credential(
-                            new ObjectId(),
-                            dto.getCredential().getUsername(),
-                            passwordEncoder.encode(dto.getCredential().getPassword()),
-                            dto.getCredential().getEmail(),
-                            Roles.CLIENT,
-                            userService.createNewUser(dto.getUser()).getId()
+                                new ObjectId(),
+                                dto.getCredential().getUsername(),
+                                passwordEncoder.encode(dto.getCredential().getPassword()),
+                                dto.getCredential().getEmail(),
+                                Roles.CLIENT,
+                                userService.createNewUser(dto.getUser()).getId()
                         )
                 )
         );
