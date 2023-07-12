@@ -11,6 +11,7 @@ import org.bson.types.ObjectId;
 import org.springframework.stereotype.Service;
 
 import javax.validation.Valid;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -26,15 +27,12 @@ public class UserService {
 
     public User createNewUser(@Valid UserDTO userDTO) {
         BillingInformation billingInformation = new BillingInformation();
-        billingInformation.setWallet(new Wallet());
+        BigDecimal balance = new BigDecimal(0);
+        billingInformation.setWallet(new Wallet(balance, null));
         billingInformation.setId(new ObjectId());
-        if (userDTO.getCards() == null) {
-            billingInformation.setCards(null);
-        } else {
-            billingInformation.setCards(userDTO.getCards());
-        }
+        billingInformation.setCards(null);
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
         LocalDateTime birthday = LocalDateTime.parse(userDTO.getBirthday(), formatter);
 
         User user = new User(

@@ -97,8 +97,8 @@ public class AuthREST {
                         new Credential(
                                 new ObjectId(),
                                 dto.getCredential().getUsername(),
-                                passwordEncoder.encode(dto.getCredential().getPassword()),
                                 dto.getCredential().getEmail(),
+                                passwordEncoder.encode(dto.getCredential().getPassword()),
                                 Roles.CLIENT,
                                 userService.createNewUser(dto.getUser()).getId()
                         )

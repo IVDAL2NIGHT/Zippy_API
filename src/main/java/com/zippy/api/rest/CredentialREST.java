@@ -36,13 +36,13 @@ public class CredentialREST {
 
     // This endpoint return the credential by id, while the id is the same of the credential.
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<?> me(@PathVariable ObjectId id) {
         return ResponseEntity.ok(credentialService.findById(id));
     }
 
     @PutMapping("/update/")
-    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     public ResponseEntity<?> updateCredential(@NotNull @AuthenticationPrincipal Credential credential, @NotNull @Valid @RequestBody UpdateDTO dto) {
         credential.setEmail(dto.getNewEmail());
         credential.setUsername(dto.getNewUsername());
@@ -52,14 +52,14 @@ public class CredentialREST {
 
 
     @PutMapping("/update/password/")
-    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     public ResponseEntity<?> changePassword(@NotNull @AuthenticationPrincipal Credential credential, @NotNull @Valid @RequestBody String newPassword) {
         credential.setPassword(passwordEncoder.encode(newPassword));
         credentialService.updateCredential(credential);
         return ResponseEntity.ok(credential);
     }
 
-    @DeleteMapping("/delete/")
+    @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> delete(@NotNull @AuthenticationPrincipal Credential credential, @NotNull @RequestBody String password) {
         if (!passwordEncoder.matches(password, credential.getPassword())) {
             return ResponseEntity.badRequest().build();
