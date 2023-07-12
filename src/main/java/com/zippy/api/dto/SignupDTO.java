@@ -3,13 +3,13 @@ package com.zippy.api.dto;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 @Getter
 @Setter
 public class SignupDTO {
-    @NotBlank
+    @NotNull
     private CredentialDTO credential;
-    @NotBlank
+    @NotNull
     private UserDTO user;
 }

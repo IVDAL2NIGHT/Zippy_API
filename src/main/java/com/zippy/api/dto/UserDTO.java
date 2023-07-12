@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @Getter
@@ -27,14 +28,11 @@ public class UserDTO {
     private String document;
     @NotBlank
     private DocumentType documentType;
-    @NotBlank
+    @NotNull
     private Address address;
     @NotBlank
     private String phone;
-    @NotBlank
+    @NotNull
     private BackupPerson backupPerson;
-    @NotBlank
-    private List<Card> cards;
-
 
 }

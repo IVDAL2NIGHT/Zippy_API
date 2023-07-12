@@ -36,6 +36,7 @@ public class Credential implements UserDetails {
     @NonNull
     private String password;
     @NonNull
+    @JsonIgnore
     private Roles role;
     @NotNull
     private ObjectId userId;

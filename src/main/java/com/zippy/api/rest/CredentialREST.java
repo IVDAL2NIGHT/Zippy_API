@@ -36,35 +36,32 @@ public class CredentialREST {
 
     // This endpoint return the credential by id, while the id is the same of the credential.
     @GetMapping("/{id}")
-    @PreAuthorize("#credential.id == #id")
-    public ResponseEntity<?> me(@AuthenticationPrincipal Credential credential, @PathVariable ObjectId id) {
-        return ResponseEntity.ok(credentialService.findById(id));
-    }
-
-    @GetMapping("/get/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<?> getCredential(@PathVariable ObjectId id) {
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<?> me(@PathVariable ObjectId id) {
         return ResponseEntity.ok(credentialService.findById(id));
     }
 
     @PutMapping("/update/")
-    public ResponseEntity<?> changePassword(@NotNull @AuthenticationPrincipal Credential credential,@NotNull @Valid @RequestBody UpdateDTO dto) {
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
+    public ResponseEntity<?> updateCredential(@NotNull @AuthenticationPrincipal Credential credential, @NotNull @Valid @RequestBody UpdateDTO dto) {
         credential.setEmail(dto.getNewEmail());
         credential.setUsername(dto.getNewUsername());
         credentialService.updateCredential(credential);
         return ResponseEntity.ok(credential);
     }
 
+
     @PutMapping("/update/password/")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     public ResponseEntity<?> changePassword(@NotNull @AuthenticationPrincipal Credential credential, @NotNull @Valid @RequestBody String newPassword) {
         credential.setPassword(passwordEncoder.encode(newPassword));
         credentialService.updateCredential(credential);
         return ResponseEntity.ok(credential);
     }
 
-    @DeleteMapping("/delete/")
-    public ResponseEntity<?> delete(@NotNull @AuthenticationPrincipal Credential credential,@NotNull @RequestBody String password) {
-        if (!passwordEncoder.matches(password, credential.getPassword())) { 
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<?> delete(@NotNull @AuthenticationPrincipal Credential credential, @NotNull @RequestBody String password) {
+        if (!passwordEncoder.matches(password, credential.getPassword())) {
             return ResponseEntity.badRequest().build();
         }
         credentialService.deleteCredential(credential);

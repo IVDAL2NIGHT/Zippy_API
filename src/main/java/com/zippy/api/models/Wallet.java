@@ -13,4 +13,9 @@ public class Wallet {
     @NotNull
     private BigDecimal balance;
     private List<Transaction> transactions;
+
+    public Wallet(@NotNull BigDecimal balance, List<Transaction> transactions) {
+        this.balance = balance;
+        this.transactions = transactions;
+    }
 }

@@ -30,7 +30,7 @@ public class StationService {
         return stationRepository.save(station);
     }
 
-    public void deleteStationById(ObjectId id){
+    public void deleteStationById(ObjectId id) {
         stationRepository.deleteById(id);
     }
 
@@ -65,7 +65,7 @@ public class StationService {
                 .toList();
     }
 
-    public List<Station> allStations(){
+    public List<Station> allStations() {
         return stationRepository.findAll();
     }
 

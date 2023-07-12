@@ -13,7 +13,6 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 
 
-
 @Service
 public class TripService {
 
@@ -28,12 +27,12 @@ public class TripService {
     }
 
     //Creación inicial del viaje
-    public Trip createTrip (ObjectId userid, ObjectId vehicleId, ObjectId startStationId, ObjectId endStationId){
+    public Trip createTrip(ObjectId userid, ObjectId vehicleId, ObjectId startStationId, ObjectId endStationId) {
 
-        return(tripRepository.insert(new Trip(userid, vehicleId, startStationId, endStationId, calculateCost(startStationId, endStationId), TripStatus.ACTIVE, calculateDeadline(startStationId, endStationId))));
+        return (tripRepository.insert(new Trip(userid, vehicleId, startStationId, endStationId, calculateCost(startStationId, endStationId), TripStatus.ACTIVE, calculateDeadline(startStationId, endStationId))));
     }
 
-    private BigDecimal calculateCost (ObjectId startStationId, ObjectId endStationId) {
+    private BigDecimal calculateCost(ObjectId startStationId, ObjectId endStationId) {
 
         BigDecimal cost = BigDecimal.valueOf(1000);
         BigDecimal distance = BigDecimal.valueOf(1000);
@@ -51,7 +50,7 @@ public class TripService {
     }
 
 
-    private LocalDateTime calculateDeadline(ObjectId startStationId, ObjectId endStationId){
+    private LocalDateTime calculateDeadline(ObjectId startStationId, ObjectId endStationId) {
         LocalDateTime deadline = LocalDateTime.now().plusMinutes(30);
         return deadline;
     }
