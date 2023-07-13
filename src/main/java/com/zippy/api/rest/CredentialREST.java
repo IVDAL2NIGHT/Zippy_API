@@ -21,7 +21,6 @@ public class CredentialREST {
     private final PasswordEncoder passwordEncoder;
     private final AuthService authService;
 
-
     public CredentialREST(PasswordEncoder passwordEncoder, AuthService authService, CredentialService credentialService) {
         this.credentialService = credentialService;
         this.passwordEncoder = passwordEncoder;

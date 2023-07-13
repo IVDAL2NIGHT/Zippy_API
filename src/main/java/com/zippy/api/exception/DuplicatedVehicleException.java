@@ -3,5 +3,5 @@ package com.zippy.api.exception;
 import lombok.experimental.StandardException;
 
 @StandardException
-public class VehicleNotFoundException extends RuntimeException {
+public class DuplicatedVehicleException extends RuntimeException{
 }

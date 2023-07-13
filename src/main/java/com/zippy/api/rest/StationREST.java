@@ -1,8 +1,12 @@
 package com.zippy.api.rest;
 
+import com.zippy.api.dto.StationDTO;
+import com.zippy.api.models.GeoJsonStation;
+import com.zippy.api.models.GeoJsonStationCollection;
 import com.zippy.api.service.StationService;
 import com.zippy.api.service.VehicleService;
 import org.bson.types.ObjectId;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -18,35 +22,50 @@ public class StationREST {
         this.vehicleService = vehicleService;
     }
 
-//    @PostMapping("/{id}/add-vehicle/{vehicleId}")
-//    public ResponseEntity<?> addVehicleToStationById(@PathVariable ObjectId id, @PathVariable ObjectId vehicleId) {
-//        return ResponseEntity.ok(stationService.addVehicleToStation(id, vehicleId));
-//    }
-
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     @PostMapping("/{id}/add-vehicle/{VehicleSerial}")
     public ResponseEntity<?> addVehicleToStationBySerial(@PathVariable ObjectId id, @PathVariable String VehicleSerial) {
-        return ResponseEntity.ok(stationService.addVehicleToStation(id, vehicleService.getVehicleBySerial(VehicleSerial).getId()));
+        return ResponseEntity.ok(stationService.addVehicleToStation(stationService.getStationById(id), vehicleService.getVehicleBySerial(VehicleSerial)));
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     @DeleteMapping("/{id}/remove-vehicle/{vehicleId}")
     public ResponseEntity<?> removeVehicleFromStation(@PathVariable ObjectId id, @PathVariable ObjectId vehicleId) {
-        return ResponseEntity.ok(stationService.removeVehicleFromStation(id, vehicleId));
+        stationService.removeVehicleFromStation(stationService.getStationById(id), vehicleId);
+        return ResponseEntity.ok().build();
+    }
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @PostMapping("/add")
+    public ResponseEntity<?> addStation(@RequestBody StationDTO dto) {
+        return ResponseEntity.ok(stationService.saveStation(
+                stationService.createStation(dto)
+        ));
     }
 
-//    @PostMapping("/add")
-//    public ResponseEntity<?> addStation(@RequestBody StationDTO dto) {
-//        return ResponseEntity.ok(stationService.addStation(name));
-//    }
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getStationById(@PathVariable ObjectId id) {
+        return ResponseEntity.ok(stationService.getStationById(id));
+    }
 
+    @GetMapping("/test")
+    public ResponseEntity<?> test() {
+        stationService.test();
+        return ResponseEntity.ok().build();
+    }
 
     @GetMapping("/all")
-    public ResponseEntity<?> allStations() {
-        return ResponseEntity.ok(stationService.allStations());
+    public ResponseEntity<GeoJsonStationCollection> allStations() {
+        return ResponseEntity.ok(
+                new GeoJsonStationCollection(
+                        stationService.getAllStations()
+                                .stream()
+                                .map(GeoJsonStation::new)
+                                .toArray(GeoJsonStation[]::new)
+                )
+        );
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping("/{id}/vehicles")
     public ResponseEntity<?> getVehiclesByStationId(@PathVariable ObjectId id) {
         return ResponseEntity.ok(stationService.getVehiclesByStationId(id));

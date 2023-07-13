@@ -4,15 +4,18 @@ import com.zippy.api.constants.DocumentType;
 import com.zippy.api.models.Address;
 import com.zippy.api.models.BackupPerson;
 import com.zippy.api.models.Card;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
-@Setter
+@AllArgsConstructor
 public class UserDTO {
     @NotBlank
     private String email;
@@ -21,7 +24,8 @@ public class UserDTO {
     @NotBlank
     private String lastName;
     @NotBlank
-    private String birthday;
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+    private LocalDateTime birthday;
     @NotBlank
     private String occupation;
     @NotBlank
@@ -34,5 +38,4 @@ public class UserDTO {
     private String phone;
     @NotNull
     private BackupPerson backupPerson;
-
 }

@@ -10,7 +10,6 @@ import javax.validation.constraints.NotBlank;
 
 @AllArgsConstructor
 @Getter
-@Setter
 public class VehicleDTO {
     private VehicleType type;
     private String model;

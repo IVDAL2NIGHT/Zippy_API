@@ -3,9 +3,11 @@ package com.zippy.api.service;
 import com.zippy.api.constants.TripStatus;
 import com.zippy.api.document.Station;
 import com.zippy.api.document.Trip;
+import com.zippy.api.models.Location;
 import com.zippy.api.repository.StationRepository;
 import com.zippy.api.repository.TripRepository;
 import org.bson.types.ObjectId;
+import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -42,8 +44,8 @@ public class TripService {
         Optional<Station> endStation = stationRepository.findById(endStationId);
 
         if (startStation.isPresent() && endStation.isPresent()) {
-            String startLocation = startStation.get().getLocation();
-            String endLocation = endStation.get().getLocation();
+            GeoJsonPoint startLocation = startStation.get().getLocation();
+            GeoJsonPoint endLocation = endStation.get().getLocation();
         }
 
         return cost;

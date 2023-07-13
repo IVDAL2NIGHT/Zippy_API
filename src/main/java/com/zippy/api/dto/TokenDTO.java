@@ -6,7 +6,6 @@ import lombok.Setter;
 import org.bson.types.ObjectId;
 
 @Getter
-@Setter
 @AllArgsConstructor
 public class TokenDTO {
     private ObjectId userId;

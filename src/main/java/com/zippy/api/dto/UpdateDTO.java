@@ -7,7 +7,6 @@ import lombok.Setter;
 import javax.validation.constraints.NotBlank;
 
 @Getter
-@Setter
 @AllArgsConstructor
 public class UpdateDTO {
     @NotBlank

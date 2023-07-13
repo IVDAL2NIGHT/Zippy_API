@@ -12,8 +12,6 @@ import org.springframework.stereotype.Service;
 
 import javax.validation.Valid;
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 @Service
 public class UserService {
@@ -27,19 +25,14 @@ public class UserService {
 
     public User createNewUser(@Valid UserDTO userDTO) {
         BillingInformation billingInformation = new BillingInformation();
-        BigDecimal balance = new BigDecimal(0);
-        billingInformation.setWallet(new Wallet(balance, null));
+        billingInformation.setWallet(new Wallet(new BigDecimal(0), null));
         billingInformation.setId(new ObjectId());
-        billingInformation.setCards(null);
-
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
-        LocalDateTime birthday = LocalDateTime.parse(userDTO.getBirthday(), formatter);
 
         User user = new User(
                 new ObjectId(),
                 userDTO.getFirstName(),
                 userDTO.getLastName(),
-                birthday,
+                userDTO.getBirthday(),
                 userDTO.getOccupation(),
                 userDTO.getEmail(),
                 userDTO.getPhone(),

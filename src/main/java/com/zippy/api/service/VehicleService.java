@@ -7,6 +7,7 @@ import org.bson.types.ObjectId;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class VehicleService {
@@ -29,11 +30,13 @@ public class VehicleService {
     }
 
     public Vehicle getVehicleById(ObjectId id) throws VehicleNotFoundException {
-        return vehicleRepository.findById(id).orElseThrow(() -> new VehicleNotFoundException("El id del vehículo no existe"));
+        return vehicleRepository.findById(id)
+                .orElseThrow(() -> new VehicleNotFoundException("El id del vehículo no existe"));
     }
 
-    public Vehicle getVehicleBySerial(String serial) {
-        return vehicleRepository.findBySerial(serial);
+    public Vehicle getVehicleBySerial(String serial) throws VehicleNotFoundException {
+        return vehicleRepository.findBySerial(serial)
+                .orElseThrow(() -> new VehicleNotFoundException("El serial del vehículo no existe"));
     }
 
 
