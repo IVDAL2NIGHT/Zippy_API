@@ -76,7 +76,7 @@ public class AuthREST {
     @PostMapping("/login")
     @Transactional
     public ResponseEntity<?> login(@Valid @RequestBody LoginDTO dto) {
-        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(dto.getUsername(), dto.getPassword()));
+        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(dto.username(), dto.password()));
         SecurityContextHolder.getContext().setAuthentication(authentication);
         Credential credential = (Credential) authentication.getPrincipal();
 
@@ -86,22 +86,21 @@ public class AuthREST {
     @PostMapping("signup")
     @Transactional
     public ResponseEntity<?> signup(@NotNull @Valid @RequestBody SignupDTO dto) {
-        if (credentialRepository.existsByEmail(dto.getCredential().getEmail())) {
+        if (credentialRepository.existsByEmail(dto.credential().email())) {
             return ResponseEntity.badRequest().body("El correo electrónico ya existe");
         }
-        if (credentialRepository.existsByUsername(dto.getCredential().getUsername())) {
+        if (credentialRepository.existsByUsername(dto.credential().username())) {
             return ResponseEntity.badRequest().body("El nombre de usuario ya existe");
         }
         return getResponseEntity(
                 credentialRepository.save(
-                        new Credential(
-                                new ObjectId(),
-                                dto.getCredential().getUsername(),
-                                dto.getCredential().getEmail(),
-                                passwordEncoder.encode(dto.getCredential().getPassword()),
-                                Roles.CLIENT,
-                                userService.createNewUser(dto.getUser()).getId()
-                        )
+                        new Credential()
+                                .setId(new ObjectId())
+                                .setEmail(dto.credential().email())
+                                .setUsername(dto.credential().username())
+                                .setPassword(passwordEncoder.encode(dto.credential().password()))
+                                .setRole(Roles.CLIENT)
+                                .setUserId(userService.createNewUser(dto.user()).getId())
                 )
         );
     }

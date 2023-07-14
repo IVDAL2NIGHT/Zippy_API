@@ -22,45 +22,42 @@ public class VehicleREST {
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/all")
     public ResponseEntity<List<Vehicle>> allVehicles() {
-        return ResponseEntity.ok(vehicleService.allVehicles());
+        return ResponseEntity.ok(vehicleService.all());
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/add")
     public ResponseEntity<?> addVehicle(VehicleDTO dto) {
-        Vehicle vehicle =
-                new Vehicle(
-                        dto.getType(),
-                        dto.getModel(),
-                        dto.getGpsSerial(),
-                        dto.getSerial(),
-                        dto.isElectric()
-                );
-        vehicle.setBattery(
-                dto.isElectric()
-                        ? dto.getBattery()
-                        : 0
+        return ResponseEntity.ok(vehicleService.add(
+                new Vehicle()
+                .setType(dto.type())
+                .setModel(dto.model())
+                .setGpsSerial(dto.gpsSerial())
+                .setSerial(dto.serial())
+                .setElectric(dto.isElectric())
+                .setBattery(dto.isElectric() ? dto.battery() : 0)
+                )
         );
-        return ResponseEntity.ok(vehicleService.addVehicle(vehicle));
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> deleteVehicle(@PathVariable ObjectId id) {
-        vehicleService.deleteVehicleById(id);
+        vehicleService.delete(id);
         return ResponseEntity.ok().build();
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/update/battery/{id}")
     public ResponseEntity<?> updateBattery(@PathVariable ObjectId id, @RequestBody int battery) {
-        Vehicle vehicle = vehicleService.getVehicleById(id);
+        Vehicle vehicle = vehicleService.getById(id);
         vehicle.setBattery(battery);
-        return ResponseEntity.ok(vehicleService.addVehicle(vehicle));
+        return ResponseEntity.ok(
+                vehicleService.save(vehicle));
     }
 
     @GetMapping("/get/{id}")
     public ResponseEntity<?> getVehicle(@PathVariable ObjectId id) {
-        return ResponseEntity.ok(vehicleService.getVehicleById(id));
+        return ResponseEntity.ok(vehicleService.getById(id));
     }
 }

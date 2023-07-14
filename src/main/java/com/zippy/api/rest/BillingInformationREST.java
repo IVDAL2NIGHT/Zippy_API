@@ -22,7 +22,7 @@ public class BillingInformationREST {
     @GetMapping("/get")
     @PreAuthorize("#credential.userId == #user.id")
     public ResponseEntity<?> getBillingInformation(@AuthenticationPrincipal Credential credential, @RequestBody User user) {
-        return ResponseEntity.ok(billingInformationService.getBillingInformation(user.getBillingInformationId()));
+        return ResponseEntity.ok(billingInformationService.get(user.getBillingInformationId()));
     }
 
     @PostMapping("/add-card")
@@ -30,9 +30,9 @@ public class BillingInformationREST {
     public ResponseEntity<?> addNewCard(@AuthenticationPrincipal Credential credential,
                                         @RequestBody UpdateBillingInformationDTO newCardDTO) {
         BillingInformation billingInformation = billingInformationService
-                .getBillingInformation(newCardDTO.getBillingInformationId());
-        billingInformation.getCards().add(newCardDTO.getNewCard());
-        return ResponseEntity.ok(billingInformationService.saveBillingInformation(billingInformation));
+                .get(newCardDTO.billingInformationId());
+        billingInformation.getCards().add(newCardDTO.newCard());
+        return ResponseEntity.ok(billingInformationService.save(billingInformation));
     }
 
     @PostMapping("/recharge")
@@ -40,9 +40,9 @@ public class BillingInformationREST {
     public ResponseEntity<?> RechargeMoney(@AuthenticationPrincipal Credential credential,
                                            @RequestBody UpdateBillingInformationDTO newBalanceDTO) {
         BillingInformation billingInformation = billingInformationService
-                .getBillingInformation(newBalanceDTO.getBillingInformationId());
-        billingInformation.getWallet().setBalance(billingInformation.getWallet().getBalance().add(newBalanceDTO.getMoney()));
-        return ResponseEntity.ok(billingInformationService.saveBillingInformation(billingInformation));
+                .get(newBalanceDTO.billingInformationId());
+        billingInformation.getWallet().setBalance(billingInformation.getWallet().getBalance().add(newBalanceDTO.money()));
+        return ResponseEntity.ok(billingInformationService.save(billingInformation));
     }
 
     @PostMapping("/add-transaction")
@@ -50,8 +50,8 @@ public class BillingInformationREST {
     public ResponseEntity<?> addTransaction(@AuthenticationPrincipal Credential credential,
                                             @RequestBody UpdateBillingInformationDTO newTransactionDTO) {
         BillingInformation billingInformation = billingInformationService
-                .getBillingInformation(newTransactionDTO.getBillingInformationId());
-        billingInformation.getWallet().getTransactions().add(newTransactionDTO.getTransaction());
-        return ResponseEntity.ok(billingInformationService.saveBillingInformation(billingInformation));
+                .get(newTransactionDTO.billingInformationId());
+        billingInformation.getWallet().getTransactions().add(newTransactionDTO.transaction());
+        return ResponseEntity.ok(billingInformationService.save(billingInformation));
     }
 }

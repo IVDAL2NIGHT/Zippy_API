@@ -29,7 +29,7 @@ public class CredentialService implements UserDetailsService {
     }
 
     public void deleteCredential(Credential credential) {
-        userService.deleteUserById(credential.getUserId());
+        userService.delete(credential.getUserId());
         credentialRepository.deleteById(credential.getId());
     }
 

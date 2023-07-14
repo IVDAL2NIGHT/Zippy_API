@@ -6,10 +6,13 @@ import com.zippy.api.models.Maintenance;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.Accessors;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -29,7 +32,8 @@ import java.util.List;
 @Document
 @Data
 @AllArgsConstructor
-@NoArgsConstructor
+@RequiredArgsConstructor
+@Accessors(chain = true)
 public class Vehicle {
     @Id
     private ObjectId id;
@@ -45,20 +49,5 @@ public class Vehicle {
     private boolean isElectric;
     private int battery;
     private List<Maintenance> maintenances;
-
-    public Vehicle(VehicleType type, String model, String serial, String gpsSerial, boolean isElectric) {
-        this.id = new ObjectId();
-        this.type = type;
-        this.model = model;
-        this.serial = serial;
-        this.gpsSerial = gpsSerial;
-        this.status = VehicleStatus.AVAILABLE;
-        this.Kilometers = 0;
-        this.startUpDate = LocalDateTime.now();
-        this.isElectric = isElectric;
-        this.battery = 100;
-        this.maintenances = null;
-    }
-
 }
 

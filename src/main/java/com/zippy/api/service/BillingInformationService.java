@@ -16,23 +16,27 @@ public class BillingInformationService {
         this.billingInformationRepository = billingInformationRepository;
     }
 
-    public BillingInformation saveBillingInformation(BillingInformation billingInformation) {
+    public BillingInformation add(BillingInformation billingInformation) {
+        return billingInformationRepository.insert(billingInformation);
+    }
+
+    public BillingInformation save(BillingInformation billingInformation) {
         return billingInformationRepository.save(billingInformation);
     }
 
-    public void deleteBillingInformationById(ObjectId id) {
+    public void delete(ObjectId id) {
         billingInformationRepository.deleteById(id);
     }
 
-    public BillingInformation getBillingInformation(ObjectId id) throws BillingInformationNotFoundException {
+    public BillingInformation get(ObjectId id) throws BillingInformationNotFoundException {
         return billingInformationRepository.findById(id)
                 .orElseThrow(() -> new BillingInformationNotFoundException("información de pago no encontrada"));
     }
 
     public BillingInformation disccountMoney(ObjectId id, BigDecimal amount) {
-        BillingInformation billingInformation = getBillingInformation(id);
+        BillingInformation billingInformation = get(id);
         billingInformation.getWallet().setBalance(billingInformation.getWallet().getBalance().subtract(amount));
-        return saveBillingInformation(billingInformation);
+        return save(billingInformation);
     }
 
 }

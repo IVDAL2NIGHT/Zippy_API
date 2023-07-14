@@ -7,6 +7,7 @@ import com.zippy.api.models.VehicleStatusId;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.Accessors;
 import org.bson.types.ObjectId;
 
 import javax.validation.constraints.NotBlank;
@@ -16,7 +17,7 @@ import java.util.Map;
 
 @Getter
 @AllArgsConstructor
-
+@Accessors(fluent = true)
 public class StationDTO {
     @NotBlank
     private String name;

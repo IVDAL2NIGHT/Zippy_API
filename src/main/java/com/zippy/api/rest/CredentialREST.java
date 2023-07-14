@@ -43,19 +43,18 @@ public class CredentialREST {
     @PutMapping("/update/")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     public ResponseEntity<?> updateCredential(@NotNull @AuthenticationPrincipal Credential credential, @NotNull @Valid @RequestBody UpdateDTO dto) {
-        credential.setEmail(dto.getNewEmail());
-        credential.setUsername(dto.getNewUsername());
-        credentialService.updateCredential(credential);
-        return ResponseEntity.ok(credential);
+        return ResponseEntity.ok(credentialService.updateCredential(
+                credential.setEmail(dto.newEmail()).setUsername(dto.newUsername())
+        ));
     }
 
 
     @PutMapping("/update/password/")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     public ResponseEntity<?> changePassword(@NotNull @AuthenticationPrincipal Credential credential, @NotNull @Valid @RequestBody String newPassword) {
-        credential.setPassword(passwordEncoder.encode(newPassword));
-        credentialService.updateCredential(credential);
-        return ResponseEntity.ok(credential);
+        return ResponseEntity.ok(credentialService.updateCredential(
+                credential.setPassword(passwordEncoder.encode(newPassword))
+        ));
     }
 
     @DeleteMapping("/delete/{id}")

@@ -1,16 +1,15 @@
 package com.zippy.api.models;
 
 import com.zippy.api.constants.VehicleStatus;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
+import lombok.experimental.Accessors;
 import org.bson.types.ObjectId;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.annotation.Id;
 
-@Getter
-@Setter
-@AllArgsConstructor
+@Data
+@RequiredArgsConstructor
+@Accessors(fluent = false, chain = true)
 public class VehicleStatusId {
     @Id
     @Lazy

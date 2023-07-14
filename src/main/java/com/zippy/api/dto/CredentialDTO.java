@@ -3,6 +3,7 @@ package com.zippy.api.dto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.Accessors;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
@@ -10,6 +11,7 @@ import javax.validation.constraints.Size;
 
 @Getter
 @AllArgsConstructor
+@Accessors(fluent = true)
 public class CredentialDTO {
     @NotBlank
     @Email

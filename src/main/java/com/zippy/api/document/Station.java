@@ -5,6 +5,8 @@ import com.zippy.api.constants.StationStatus;
 import com.zippy.api.models.VehicleStatusId;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.Accessors;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
@@ -15,6 +17,8 @@ import java.util.List;
 @Document
 @Data
 @AllArgsConstructor
+@RequiredArgsConstructor
+@Accessors(chain = true)
 public class Station {
     @Id
     private ObjectId id;

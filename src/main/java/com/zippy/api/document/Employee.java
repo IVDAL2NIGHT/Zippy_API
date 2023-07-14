@@ -4,6 +4,8 @@ import com.zippy.api.constants.DocumentType;
 import com.zippy.api.models.Address;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.Accessors;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -18,6 +20,8 @@ import java.time.LocalDateTime;
 @Document
 @Data
 @AllArgsConstructor
+@RequiredArgsConstructor
+@Accessors(chain = true)
 public class Employee {
     @Id
     private ObjectId credentialsId;

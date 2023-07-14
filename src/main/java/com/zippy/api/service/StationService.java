@@ -1,25 +1,33 @@
 package com.zippy.api.service;
 
+
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zippy.api.constants.VehicleStatus;
 import com.zippy.api.document.Station;
 import com.zippy.api.document.Vehicle;
-import com.zippy.api.dto.StationDTO;
 import com.zippy.api.exception.DuplicatedVehicleException;
 import com.zippy.api.exception.StationNotFoundException;
 import com.zippy.api.exception.VehicleNotFoundException;
+import com.zippy.api.models.GeoJsonRequest.GeoRequest;
+import com.zippy.api.models.GeoJsonResponse.FeatureCollection;
 import com.zippy.api.models.VehicleStatusId;
 import com.zippy.api.repository.StationRepository;
+
+import com.zippy.api.models.GeoJsonResponse.FeatureCollection;
+
 import org.bson.types.ObjectId;
-import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
 import org.springframework.stereotype.Service;
 
 import java.net.URI;
 import java.net.http.HttpClient;
-import java.net.http.HttpHeaders;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+
+
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 @Service
 public class StationService {
@@ -29,80 +37,66 @@ public class StationService {
         this.stationRepository = stationRepository;
     }
 
-    public List<Station> getAllStations() {
+    public List<Station> all() {
         return stationRepository.findAll();
     }
 
-    public Station createStation(StationDTO dto) {
-        return new Station(
-                new ObjectId(),
-                dto.getName(),
-                new GeoJsonPoint(dto.getLocation().getLatitude(), dto.getLocation().getLongitude()),
-                dto.getCapacity(),
-                dto.getVehicleStatusIdList(),
-                dto.getStatus()
-        );
+    public Station add(Station station) {
+        return stationRepository.insert(station);
     }
-    public Station saveStation(Station station) {
+
+    public Station save(Station station) {
         return stationRepository.save(station);
     }
 
-    public void deleteStationById(ObjectId id) {
+    public void delete(ObjectId id) {
         stationRepository.deleteById(id);
     }
 
-    public Station getStationById(ObjectId id) throws StationNotFoundException {
+    public Station getById(ObjectId id) throws StationNotFoundException {
         return stationRepository.findById(id)
                 .orElseThrow(() -> new StationNotFoundException("El id de la estación no existe"));
     }
 
-    public Station getStationByName(String name) throws StationNotFoundException {
+    public Station getByName(String name) throws StationNotFoundException {
         return stationRepository.findByName(name)
                 .orElseThrow(() -> new StationNotFoundException("El nombre de la estación no existe"));
     }
 
-    public Station addVehicleToStation(Station station, Vehicle vehicle) throws DuplicatedVehicleException {
-        VehicleStatusId vehicleStatusId = new VehicleStatusId(vehicle.getId(), vehicle.getStatus());
-        if (station.getVehicleStatusIds().contains(vehicleStatusId)) {
-            throw new DuplicatedVehicleException("El vehículo ya está asociado a la estación");
+    public Station addVehicle(Station station, Vehicle vehicle) throws DuplicatedVehicleException {
+        if (station.getVehicleStatusIds().stream().anyMatch(vehicleStatusId -> vehicleStatusId.get_id().equals(vehicle.getId()))) {
+            throw new DuplicatedVehicleException("El vehículo ya se encuentra en la estación");
         }
-        station.getVehicleStatusIds().add(vehicleStatusId);
-        return stationRepository.save(station);
+        return save(
+                station.setVehicleStatusIds(
+                        Stream.concat(
+                                station.getVehicleStatusIds().stream(),
+                                Stream.of(
+                                        new VehicleStatusId()
+                                                .set_id(vehicle.getId())
+                                                .setStatus(vehicle.getStatus())
+                                )
+                        ).toList()
+                )
+        );
     }
 
-    public void removeVehicleFromStation(Station station, ObjectId vehicle) throws VehicleNotFoundException {
-        station.getVehicleStatusIds()
-                .remove(
+    public Station removeVehicle(Station station, Vehicle vehicle) throws VehicleNotFoundException {
+        if (station.getVehicleStatusIds().stream().noneMatch(vehicleStatusId -> vehicleStatusId.get_id().equals(vehicle.getId()))) {
+            throw new VehicleNotFoundException("El vehículo no se encuentra en la estación");
+        }
+        return save(
+                station.setVehicleStatusIds(
                         station.getVehicleStatusIds()
                                 .stream()
-                                .filter(vehicleStatusId -> vehicleStatusId.get_id().equals(vehicle))
-                                .findFirst()
-                                .orElseThrow(() -> new VehicleNotFoundException("El vehículo no está asociado a la estación"))
-                );
-        stationRepository.save(station);
-    }
-
-    public void test(){
-        String apikey = "${com.zippy.api.openroutekey}";
-        String bCoordinates ="8.681495,49.41461";
-        String eCoordinates ="8.687872,49.420318";
-        String url = "https://api.openrouteservice.org/v2/directions/driving-car?api_key=" + apikey + "&start=" + bCoordinates + "&end=" + eCoordinates;
-        HttpClient client = HttpClient.newHttpClient();
-        HttpRequest request = HttpRequest.newBuilder().uri(URI.create(url)).build();
-        CompletableFuture<HttpResponse<String>> response = client.sendAsync(request, HttpResponse.BodyHandlers.ofString());
-        response.thenAccept(res -> {
-            int statusCode = res.statusCode();
-            HttpHeaders headers = res.headers();
-            String responseBody = res.body();
-
-            System.out.println("Status Code: " + statusCode);
-            System.out.println("Headers: " + headers);
-            System.out.println("Response Body: " + responseBody);
-        }).join();
+                                .filter(vehicleStatusId -> !vehicleStatusId.get_id().equals(vehicle.getId()))
+                                .toList()
+                )
+        );
     }
 
     public List<ObjectId> getAvailableVehiclesByStationId(ObjectId id) {
-        return getStationById(id)
+        return getById(id)
                 .getVehicleStatusIds()
                 .stream()
                 .filter(entry -> entry.getStatus().equals(VehicleStatus.AVAILABLE))
@@ -111,10 +105,50 @@ public class StationService {
     }
 
     public List<ObjectId> getVehiclesByStationId(ObjectId id) {
-        return getStationById(id)
+        return getById(id)
                 .getVehicleStatusIds()
                 .stream()
                 .map(VehicleStatusId::get_id)
                 .toList();
+    }
+
+    public Optional<FeatureCollection> calculateRoute(Station startStation, Station endStation) {
+        try {
+            GeoRequest requestValue = new GeoRequest()
+                    .coordinates(new Double[][]{
+                            startStation.getLocation().getCoordinates().toArray(Double[]::new),
+                            endStation.getLocation().getCoordinates().toArray(Double[]::new)
+                    })
+                    .elevation(false)
+                    .language("es")
+                    .preference("recommended")
+                    .units("m")
+                    .geometry(true);
+
+            String payload = requestValue.toJson();
+
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(new URI("https://api.openrouteservice.org/v2/directions/driving-car/geojson"))
+                    .header("Authorization", "5b3ce3597851110001cf62483d251f50bfe34769a78aaa5dda0ca4c8")
+                    .header("Accept", "application/json, application/geo+json, application/gpx+xml, img/png; charset=utf-8")
+                    .header("Content-Type", "application/json; charset=utf-8")
+                    .POST(HttpRequest.BodyPublishers.ofString(payload))
+                    .build();
+
+            HttpClient client = HttpClient.newHttpClient();
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+            //int statusCode = response.statusCode();
+            ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+            if (response.statusCode() != 200) {
+                System.out.println(response.body());
+                return Optional.empty();
+            }
+            return Optional.ofNullable(objectMapper.readValue(response.body(), FeatureCollection.class));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Optional.empty();
+        }
     }
 }
