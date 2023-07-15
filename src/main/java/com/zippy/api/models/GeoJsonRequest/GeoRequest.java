@@ -17,14 +17,14 @@ public class GeoRequest {
     private String preference;
     private Boolean geometry;
 
-    public GeoRequest(Double[][] coordinates, boolean elevation, String language, String preference, String units, boolean geometry) {
+/*    public GeoRequest(Double[][] coordinates, boolean elevation, String language, String preference, String units, boolean geometry) {
         this.coordinates = coordinates;
         this.elevation = elevation;
         this.language = language;
         this.preference = preference;
         this.units = units;
         this.geometry = geometry;
-    }
+    }*/
 
     public String toJson() {
         StringBuilder jsonBuilder = new StringBuilder();
