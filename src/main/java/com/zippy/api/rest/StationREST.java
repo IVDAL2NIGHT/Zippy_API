@@ -26,7 +26,7 @@ public class StationREST {
         this.vehicleService = vehicleService;
     }
 
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN, EMPLOYEE')")
     @PostMapping("/{id}/add-vehicle/{VehicleSerial}")
     public ResponseEntity<?> addVehicleToStationBySerial(@PathVariable ObjectId id, @PathVariable String VehicleSerial) {
         return ResponseEntity.ok(stationService.addVehicle(stationService.getById(id), vehicleService.getBySerial(VehicleSerial)));

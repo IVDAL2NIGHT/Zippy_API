@@ -1,6 +1,7 @@
 package com.zippy.api.security;
 
 import com.zippy.api.service.CredentialService;
+import org.jetbrains.annotations.TestOnly;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -13,6 +14,10 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.filter.CorsFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -46,6 +51,19 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(credentialService)
                 .passwordEncoder(passwordEncoder());
+    }
+
+    // Configuración de CORS para permitir peticiones desde el frontend. Solo para desarrollo
+    @Bean
+    public CorsFilter corsFilter() {
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowCredentials(true);
+        config.addAllowedOrigin("*"); // Origen permitido
+        config.addAllowedHeader("*"); // Permitir todos los encabezados
+        config.addAllowedMethod("*"); // Permitir todos los métodos HTTP
+        source.registerCorsConfiguration("/api/**", config); // Ruta para permitir CORS
+        return new CorsFilter(source);
     }
 
     @Override

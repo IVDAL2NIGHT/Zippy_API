@@ -76,11 +76,15 @@ public class AuthREST {
     @PostMapping("/login")
     @Transactional
     public ResponseEntity<?> login(@Valid @RequestBody LoginDTO dto) {
-        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(dto.username(), dto.password()));
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        Credential credential = (Credential) authentication.getPrincipal();
+        try {
+            Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(dto.username(), dto.password()));
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            Credential credential = (Credential) authentication.getPrincipal();
 
-        return getResponseEntity(credential);
+            return getResponseEntity(credential);
+        } catch (BadCredentialsException e) {
+            return ResponseEntity.badRequest().body("Credenciales incorrectas");
+        }
     }
 
     @PostMapping("signup")

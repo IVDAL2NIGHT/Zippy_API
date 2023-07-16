@@ -35,13 +35,13 @@ public class UserREST {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("#credential.userId == #id")
+    @PreAuthorize("#credential.userId == #id or hasAuthority('ADMIN')")
     public ResponseEntity<?> getUser(@NotNull @Valid @AuthenticationPrincipal Credential credential, @PathVariable ObjectId id) {
         return ResponseEntity.ok(userService.getById(id));
     }
 
     @DeleteMapping("/delete/{id}")
-    @PreAuthorize("#credential.userId == #id")
+    @PreAuthorize("#credential.userId == #id or hasAuthority('ADMIN')")
     public ResponseEntity<?> deleteUser(@NotNull @AuthenticationPrincipal Credential credential, @PathVariable ObjectId id) {
         userService.delete(id);
         return ResponseEntity.ok().build();

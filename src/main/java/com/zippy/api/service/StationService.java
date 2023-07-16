@@ -63,6 +63,10 @@ public class StationService {
         if (station.getVehicleStatusIds().stream().anyMatch(vehicleStatusId -> vehicleStatusId.get_id().equals(vehicle.getId()))) {
             throw new DuplicatedVehicleException("El vehículo ya se encuentra en la estación");
         }
+        if (vehicle.getStatus() == VehicleStatus.AVAILABLE) {
+            throw new Error("El vehículo no puede agregarse a la estación si está asignado a otra estación");
+        }
+        vehicle.setStatus(VehicleStatus.AVAILABLE);
         return save(
                 station.setVehicleStatusIds(
                         Stream.concat(

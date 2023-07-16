@@ -2,12 +2,12 @@ package com.zippy.api;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
-
 @SpringBootTest
-class SecurityApplicationTests {
+class ZippyApiAplicationTest {
 
 	@Test
 	void contextLoads() {
+
 	}
 
 }

@@ -19,13 +19,13 @@ public class VehicleREST {
         this.vehicleService = vehicleService;
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping("/all")
     public ResponseEntity<List<Vehicle>> allVehicles() {
         return ResponseEntity.ok(vehicleService.all());
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     @PostMapping("/add")
     public ResponseEntity<?> addVehicle(VehicleDTO dto) {
         return ResponseEntity.ok(vehicleService.add(
@@ -40,14 +40,14 @@ public class VehicleREST {
         );
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> deleteVehicle(@PathVariable ObjectId id) {
         vehicleService.delete(id);
         return ResponseEntity.ok().build();
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     @PutMapping("/update/battery/{id}")
     public ResponseEntity<?> updateBattery(@PathVariable ObjectId id, @RequestBody int battery) {
         Vehicle vehicle = vehicleService.getById(id);
