@@ -50,13 +50,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         return new BCryptPasswordEncoder();
     }
 
-    @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(credentialService)
-                .passwordEncoder(passwordEncoder());
-    }
-
-    // Configuración de CORS para permitir peticiones desde el frontend. Solo para desarrollo
 //    @Bean
 //    public CorsFilter corsFilter() {
 //        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
@@ -69,11 +62,20 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 //        return new CorsFilter(source);
 //    }
 
+    @Override
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+        auth.userDetailsService(credentialService)
+                .passwordEncoder(passwordEncoder());
+    }
+
+    //Configuración de CORS para permitir peticiones desde el frontend. Solo para desarrollo
+
+
     @Bean
     public CorsFilter corsFilter() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowCredentials(true);
-        configuration.addAllowedOrigin("*");
+        configuration.addAllowedOriginPattern("*");
         configuration.addAllowedHeader("*");
         configuration.addAllowedMethod("*");
         configuration.addExposedHeader("Authorization");
@@ -88,7 +90,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .exceptionHandling().authenticationEntryPoint(accessTokenEntryPoint).and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
                 .authorizeRequests()
-                    .antMatchers(HttpMethod.OPTIONS, "/api/**").permitAll()
+                    //.antMatchers(HttpMethod.OPTIONS, "/api/**").permitAll()
                     .antMatchers("/api/auth/**").permitAll()
                     .anyRequest().authenticated();
         http.addFilterBefore(accessTokenFilter(), UsernamePasswordAuthenticationFilter.class);
