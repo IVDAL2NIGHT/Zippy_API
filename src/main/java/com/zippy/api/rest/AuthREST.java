@@ -98,13 +98,14 @@ public class AuthREST {
         }
         return getResponseEntity(
                 credentialRepository.save(
-                        new Credential()
-                                .setId(new ObjectId())
-                                .setEmail(dto.credential().email())
-                                .setUsername(dto.credential().username())
-                                .setPassword(passwordEncoder.encode(dto.credential().password()))
-                                .setRole(Roles.CLIENT)
-                                .setUserId(userService.createNewUser(dto.user()).getId())
+                        Credential.builder()
+                                .id(new ObjectId())
+                                .email(dto.credential().email())
+                                .username(dto.credential().username())
+                                .password(passwordEncoder.encode(dto.credential().password()))
+                                .role(Roles.CLIENT)
+                                .userId(userService.createNewUser(dto.user()).getId())
+                                .build()
                 )
         );
     }
@@ -142,7 +143,7 @@ public class AuthREST {
         if (jwtHelper.validateRefreshToken(refreshTokenString) && refreshTokenRepository.existsById(jwtHelper.getTokenIdFromRefreshToken(refreshTokenString))) {
             // valid and exists in db
 
-            Credential credential = credentialService.findById(jwtHelper.getUserIdFromRefreshToken(refreshTokenString));
+            Credential credential = credentialService.getById(jwtHelper.getUserIdFromRefreshToken(refreshTokenString));
             String accessToken = jwtHelper.generateAccessToken(credential);
 
             return ResponseEntity.ok(new TokenDTO(credential.getId(), accessToken, refreshTokenString));
@@ -159,7 +160,7 @@ public class AuthREST {
 
             refreshTokenRepository.deleteById(jwtHelper.getTokenIdFromRefreshToken(refreshTokenString));
 
-            Credential credential = credentialService.findById(jwtHelper.getUserIdFromRefreshToken(refreshTokenString));
+            Credential credential = credentialService.getById(jwtHelper.getUserIdFromRefreshToken(refreshTokenString));
 
             return getResponseEntity(credential);
         }

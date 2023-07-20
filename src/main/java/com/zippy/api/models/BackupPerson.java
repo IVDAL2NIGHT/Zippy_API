@@ -10,9 +10,9 @@ import javax.validation.constraints.NotNull;
 @AllArgsConstructor
 public class BackupPerson {
     @NotNull
-    private String name;
+    private String firtName;
     @NotNull
-    private String lastname;
+    private String lastName;
     @NotNull
     private String phone;
     @NotNull

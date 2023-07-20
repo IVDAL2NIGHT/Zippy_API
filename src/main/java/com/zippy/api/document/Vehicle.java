@@ -1,9 +1,13 @@
 package com.zippy.api.document;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.zippy.api.constants.VehicleStatus;
 import com.zippy.api.constants.VehicleType;
 import com.zippy.api.models.Maintenance;
+import com.zippy.api.models.VehicleStatusId;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.Accessors;
@@ -30,7 +34,7 @@ import java.util.List;
 @Document
 @Data
 @AllArgsConstructor
-@RequiredArgsConstructor
+@Builder
 @Accessors(chain = true)
 public class Vehicle {
     @Id
@@ -38,6 +42,7 @@ public class Vehicle {
     @Indexed(unique = true)
     private String serial;
     @Indexed(unique = true)
+    @JsonIgnore
     private String gpsSerial;
     private String model;
     private VehicleType type;
@@ -47,5 +52,14 @@ public class Vehicle {
     private boolean isElectric;
     private int battery;
     private List<Maintenance> maintenances;
+
+
+    public VehicleStatusId toVehicleStatusId() {
+        return VehicleStatusId.builder()
+                ._id(this.id)
+                .status(this.status)
+                .type(this.type)
+                .build();
+    }
 }
 

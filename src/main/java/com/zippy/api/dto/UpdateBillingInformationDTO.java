@@ -15,9 +15,6 @@ import java.math.BigDecimal;
 @Accessors(fluent = true)
 public class UpdateBillingInformationDTO {
     @NotBlank
-    private ObjectId userId;
-    @NotBlank
-    private ObjectId billingInformationId;
     private Card newCard;
     private BigDecimal money;
     private Transaction transaction;

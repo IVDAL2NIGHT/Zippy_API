@@ -1,11 +1,15 @@
 package com.zippy.api.models.geoJsonRequest;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.Accessors;
 
 @Data
 @RequiredArgsConstructor
+@AllArgsConstructor
+@Builder
 @Accessors(chain = true, fluent = true)
 public class GeoRequest {
     private Double[][] coordinates;

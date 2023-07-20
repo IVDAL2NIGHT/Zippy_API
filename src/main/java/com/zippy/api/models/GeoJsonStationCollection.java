@@ -1,6 +1,8 @@
 package com.zippy.api.models;
 
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.Accessors;
@@ -9,7 +11,8 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Iterator;
 
 @Getter
-@RequiredArgsConstructor
+@Builder
+@AllArgsConstructor
 @Accessors(fluent = false, chain = true)
 public class GeoJsonStationCollection implements Iterable<GeoJsonStation> {
     private final String type;

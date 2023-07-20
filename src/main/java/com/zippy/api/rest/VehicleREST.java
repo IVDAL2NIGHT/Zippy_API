@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -29,13 +30,19 @@ public class VehicleREST {
     @PostMapping("/add")
     public ResponseEntity<?> addVehicle(VehicleDTO dto) {
         return ResponseEntity.ok(vehicleService.add(
-                        new Vehicle()
-                                .setType(dto.type())
-                                .setModel(dto.model())
-                                .setGpsSerial(dto.gpsSerial())
-                                .setSerial(dto.serial())
-                                .setElectric(dto.isElectric())
-                                .setBattery(dto.isElectric() ? dto.battery() : 0)
+                        Vehicle.builder()
+                                .type(dto.type())
+                                .model(dto.model())
+                                .gpsSerial(dto.gpsSerial())
+                                .serial(dto.serial())
+                                .isElectric(dto.isElectric())
+                                .status(dto.status())
+                                .startUpDate(LocalDateTime.now())
+                                .kilometers(0)
+                                .maintenances(null)
+                                .id(new ObjectId())
+                                .battery(dto.isElectric() ? dto.battery() : 0)
+                                .build()
                 )
         );
     }
@@ -50,10 +57,9 @@ public class VehicleREST {
     @PreAuthorize("hasAuthority('ADMIN')")
     @PutMapping("/update/battery/{id}")
     public ResponseEntity<?> updateBattery(@PathVariable ObjectId id, @RequestBody int battery) {
-        Vehicle vehicle = vehicleService.getById(id);
-        vehicle.setBattery(battery);
-        return ResponseEntity.ok(
-                vehicleService.save(vehicle));
+        return ResponseEntity.ok(vehicleService.save(
+                vehicleService.getById(id).setBattery(battery)
+        ));
     }
 
     @GetMapping("/get/{id}")

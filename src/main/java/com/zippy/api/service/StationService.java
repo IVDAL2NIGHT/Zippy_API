@@ -28,9 +28,11 @@ import java.util.stream.Stream;
 @Service
 public class StationService {
     private final StationRepository stationRepository;
+    private final VehicleService vehicleService;
 
-    public StationService(StationRepository stationRepository) {
+    public StationService(StationRepository stationRepository, VehicleService vehicleService) {
         this.stationRepository = stationRepository;
+        this.vehicleService = vehicleService;
     }
 
     public List<Station> all() {
@@ -59,48 +61,13 @@ public class StationService {
                 .orElseThrow(() -> new StationNotFoundException("El nombre de la estación no existe"));
     }
 
-    public Station addVehicle(Station station, Vehicle vehicle) throws DuplicatedVehicleException {
-        if (station.getVehicleStatusIds().stream().anyMatch(vehicleStatusId -> vehicleStatusId.get_id().equals(vehicle.getId()))) {
-            throw new DuplicatedVehicleException("El vehículo ya se encuentra en la estación");
-        }
-        if (vehicle.getStatus() == VehicleStatus.AVAILABLE) {
-            throw new Error("El vehículo no puede agregarse a la estación si está asignado a otra estación");
-        }
-        vehicle.setStatus(VehicleStatus.AVAILABLE);
-        return save(
-                station.setVehicleStatusIds(
-                        Stream.concat(
-                                station.getVehicleStatusIds().stream(),
-                                Stream.of(
-                                        new VehicleStatusId()
-                                                .set_id(vehicle.getId())
-                                                .setStatus(vehicle.getStatus())
-                                )
-                        ).toList()
-                )
-        );
-    }
-
-    public Station removeVehicle(Station station, Vehicle vehicle) throws VehicleNotFoundException {
-        if (station.getVehicleStatusIds().stream().noneMatch(vehicleStatusId -> vehicleStatusId.get_id().equals(vehicle.getId()))) {
-            throw new VehicleNotFoundException("El vehículo no se encuentra en la estación");
-        }
-        return save(
-                station.setVehicleStatusIds(
-                        station.getVehicleStatusIds()
-                                .stream()
-                                .filter(vehicleStatusId -> !vehicleStatusId.get_id().equals(vehicle.getId()))
-                                .toList()
-                )
-        );
-    }
-
-    public List<ObjectId> getAvailableVehiclesByStationId(ObjectId id) {
+    public List<Vehicle> getAvailableVehiclesByStationId(ObjectId id) {
         return getById(id)
                 .getVehicleStatusIds()
                 .stream()
                 .filter(entry -> entry.getStatus().equals(VehicleStatus.AVAILABLE))
                 .map(VehicleStatusId::get_id)
+                .map(vehicleService::getById)
                 .toList();
     }
 
@@ -114,16 +81,17 @@ public class StationService {
 
     public GeoJsonResponseWraper calculateRoute(Station startStation, Station endStation) {
         try {
-            GeoRequest requestValue = new GeoRequest()
+            GeoRequest requestValue = GeoRequest.builder()
                     .coordinates(new Double[][]{
-                            startStation.getLocation().getCoordinates().toArray(Double[]::new),
-                            endStation.getLocation().getCoordinates().toArray(Double[]::new)
+                            startStation.getCoordinates(),
+                            endStation.getCoordinates()
                     })
                     .elevation(false)
                     .language("es")
                     .preference("recommended")
                     .units("m")
-                    .geometry(true);
+                    .geometry(true)
+                    .build();
 
             String payload = requestValue.toJson();
 
@@ -140,17 +108,19 @@ public class StationService {
 
             ObjectMapper objectMapper = new ObjectMapper();
             objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-            return new GeoJsonResponseWraper()
+            return GeoJsonResponseWraper.builder()
                     .statusCode(response.statusCode())
                     .statusMessage(response.body())
-                    .featureCollection(Optional.ofNullable(objectMapper.readValue(response.body(), FeatureCollection.class))
-                            .orElseThrow(() -> new Exception("Error al parsear la respuesta de la API de rutas")
-                            ));
+                    .featureCollection(
+                            Optional.ofNullable(objectMapper.readValue(response.body(), FeatureCollection.class))
+                            .orElseThrow(() -> new Exception("Error al parsear la respuesta de la API de rutas")))
+                    .build();
         } catch (Exception e) {
             e.printStackTrace();
-            return new GeoJsonResponseWraper()
+            return GeoJsonResponseWraper.builder()
                     .statusCode(500)
-                    .statusMessage("Error al calcular la ruta");
+                    .statusMessage("Error al calcular la ruta")
+                    .build();
         }
     }
 }

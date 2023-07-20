@@ -19,7 +19,6 @@ public class VehicleDTO {
     @NotBlank
     private String gpsSerial;
     private VehicleStatus status;
-    private String startUpDate;
     @NotBlank
     private boolean isElectric;
     private int battery;

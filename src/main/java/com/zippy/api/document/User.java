@@ -4,6 +4,7 @@ import com.zippy.api.constants.DocumentType;
 import com.zippy.api.models.Address;
 import com.zippy.api.models.BackupPerson;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.Accessors;
@@ -17,14 +18,14 @@ import java.time.LocalDateTime;
 @Document
 @Data
 @AllArgsConstructor
-@RequiredArgsConstructor
+@Builder
 @Accessors(chain = true)
 public class User {
     @Id
     private ObjectId id;
     private String firstName;
     private String lastName;
-    private LocalDateTime birthday;
+    private LocalDateTime birthDate;
     private String occupation;
     private String email;
     private String phone;

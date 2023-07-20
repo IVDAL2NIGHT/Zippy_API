@@ -8,7 +8,6 @@ import com.zippy.api.models.geoJsonResponse.GeoJsonResponseWraper;
 import com.zippy.api.service.StationService;
 import com.zippy.api.service.VehicleService;
 import org.bson.types.ObjectId;
-import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -26,33 +25,48 @@ public class StationREST {
         this.vehicleService = vehicleService;
     }
 
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<?> deleteStation(@PathVariable ObjectId id) {
+        stationService.delete(id);
+        return ResponseEntity.ok().build();
+    }
+
+
     @PreAuthorize("hasAuthority('ADMIN, EMPLOYEE')")
     @PostMapping("/{id}/add-vehicle/{VehicleSerial}")
     public ResponseEntity<?> addVehicleToStationBySerial(@PathVariable ObjectId id, @PathVariable String VehicleSerial) {
-        return ResponseEntity.ok(stationService.addVehicle(stationService.getById(id), vehicleService.getBySerial(VehicleSerial)));
+        return ResponseEntity.ok(stationService.save(stationService.getById(id)
+                        .addVehicleStatusId(vehicleService.getBySerial(VehicleSerial).toVehicleStatusId())
+        ));
     }
 
     @PreAuthorize("hasAuthority('ADMIN')")
     @DeleteMapping("/{id}/remove-vehicle/{vehicleId}")
     public ResponseEntity<?> removeVehicleFromStation(@PathVariable ObjectId id, @PathVariable ObjectId vehicleId) {
         return ResponseEntity.ok(
-                stationService.removeVehicle(stationService.getById(id), vehicleService.getById(vehicleId))
-        );
+                stationService.save(stationService.getById(id)
+                                .removeVehicleStatusId(vehicleId)
+        ));
+    }
+
+    @GetMapping
+    public ResponseEntity<Station> getStationByName(@RequestParam String name) {
+        return ResponseEntity.ok(stationService.getByName(name));
     }
 
     @PreAuthorize("hasAuthority('ADMIN')")
     @PostMapping("/add")
     public ResponseEntity<?> addStation(@RequestBody StationDTO dto) {
         return ResponseEntity.ok(stationService.add(
-                new Station()
-                        .setId(new ObjectId())
-                        .setName(dto.name())
-                        .setCapacity(dto.capacity())
-                        .setVehicleStatusIds(dto.vehicleStatusIdList())
-                        .setStatus(dto.status())
-                        .setLocation(new GeoJsonPoint(
-                                dto.location().getLongitude(), dto.location().getLatitude()
-                        ))
+                Station.builder()
+                        .id(new ObjectId())
+                        .name(dto.name())
+                        .capacity(dto.capacity())
+                        .vehicleStatusIds(dto.vehicleStatusIdList())
+                        .status(dto.status())
+                        .coordinates(new Double[]{dto.location().getLongitude(), dto.location().getLatitude()})
+                        .build()
         ));
     }
 

@@ -41,30 +41,26 @@ public class UserService {
 
     public User createNewUser(@Valid UserDTO dto) {
         return add(
-                new User()
-                        .setId(new ObjectId())
-                        .setFirstName(dto.firstName())
-                        .setLastName(dto.lastName())
-                        .setEmail(dto.email())
-                        .setDocument(dto.document())
-                        .setDocumentType(dto.documentType())
-                        .setAddress(dto.address())
-                        .setPhone(dto.phone())
-                        .setOccupation(dto.occupation())
-                        .setBirthday(dto.birthday())
-                        .setBackupPerson(dto.backupPerson())
-                        .setBillingInformationId(
+                User.builder()
+                        .id(new ObjectId())
+                        .firstName(dto.firstName())
+                        .lastName(dto.lastName())
+                        .email(dto.email())
+                        .document(dto.document())
+                        .documentType(dto.documentType())
+                        .address(dto.address())
+                        .phone(dto.phone())
+                        .occupation(dto.occupation())
+                        .birthDate(dto.birthday())
+                        .backupPerson(dto.backupPerson())
+                        .billingInformationId(
                                 billingInformationService.add(
-                                        new BillingInformation()
-                                                .setWallet(
-                                                        new Wallet()
-                                                                .setBalance(new BigDecimal(0))
-                                                                .setTransactions(null)
-                                                )
-                                                .setCards(null)
-                                                .setId(new ObjectId())
+                                        BillingInformation.builder()
+                                                .balance(new BigDecimal(0))
+                                                .id(new ObjectId())
+                                                .build()
                                 ).getId()
-                        )
+                        ).build()
         );
     }
 }

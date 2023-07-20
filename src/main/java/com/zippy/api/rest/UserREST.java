@@ -41,8 +41,8 @@ public class UserREST {
     }
 
     @DeleteMapping("/delete/{id}")
-    @PreAuthorize("#credential.userId == #id or hasAuthority('ADMIN')")
-    public ResponseEntity<?> deleteUser(@NotNull @AuthenticationPrincipal Credential credential, @PathVariable ObjectId id) {
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<?> deleteUser(@PathVariable ObjectId id) {
         userService.delete(id);
         return ResponseEntity.ok().build();
     }
