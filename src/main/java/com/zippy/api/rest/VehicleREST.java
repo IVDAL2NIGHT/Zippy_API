@@ -2,14 +2,16 @@ package com.zippy.api.rest;
 
 import com.zippy.api.document.Vehicle;
 import com.zippy.api.dto.VehicleDTO;
+import com.zippy.api.models.Maintenance;
 import com.zippy.api.service.VehicleService;
 import org.bson.types.ObjectId;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api/vehicle")
@@ -39,7 +41,7 @@ public class VehicleREST {
                                 .status(dto.status())
                                 .startUpDate(LocalDateTime.now())
                                 .kilometers(0)
-                                .maintenances(null)
+                                .maintenances(new ArrayList<>())
                                 .id(new ObjectId())
                                 .battery(dto.isElectric() ? dto.battery() : 0)
                                 .build()
