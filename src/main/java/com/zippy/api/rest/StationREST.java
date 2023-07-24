@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.stream.Collectors;
 
 
 @RestController
@@ -28,7 +27,7 @@ public class StationREST {
         this.vehicleService = vehicleService;
     }
 
-    //@PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteStation(@PathVariable ObjectId id) {
         stationService.delete(id);
