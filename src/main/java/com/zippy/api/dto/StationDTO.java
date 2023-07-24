@@ -1,7 +1,6 @@
 package com.zippy.api.dto;
 
 import com.zippy.api.constants.StationStatus;
-import com.zippy.api.models.Location;
 import com.zippy.api.models.VehicleStatusId;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -18,7 +17,7 @@ public class StationDTO {
     @NotBlank
     private String name;
     @NotNull
-    private Location location;
+    private Double[] coordinates;
     @NotBlank
     private int capacity;
     @NotNull

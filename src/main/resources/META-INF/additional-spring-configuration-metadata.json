@@ -1,0 +1,8 @@
+{
+  "properties": [
+    {
+      "name": "com.zippy.api.openroutekey",
+      "type": "java.lang.String",
+      "description": "Description for com.zippy.api.openroutekey."
+  }
+] }

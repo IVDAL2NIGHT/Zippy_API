@@ -68,7 +68,7 @@ public class CredentialREST {
     }
 
     @PreAuthorize("#credential.userId == #id or hasAuthority('ADMIN')")
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(
             @NotNull @AuthenticationPrincipal Credential credential,
             @NotNull @RequestBody String password,

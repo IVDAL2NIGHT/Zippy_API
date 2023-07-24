@@ -40,7 +40,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     protected AuthenticationManager authenticationManager() throws Exception {
         return super.authenticationManager();
     }
-
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -86,8 +85,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .exceptionHandling().authenticationEntryPoint(accessTokenEntryPoint).and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
                 .authorizeRequests()
-                    //.antMatchers(HttpMethod.OPTIONS, "/api/**").permitAll()
-                    .antMatchers("/api/auth/**").permitAll()
+                    .antMatchers("/api/auth/**").permitAll() // Activar en producción y desactivar el siguiente
+//                    .antMatchers("/api/**").permitAll() // Solo para desarrollo. Eliminar en producción
                     .anyRequest().authenticated();
         http.addFilterBefore(accessTokenFilter(), UsernamePasswordAuthenticationFilter.class);
     }

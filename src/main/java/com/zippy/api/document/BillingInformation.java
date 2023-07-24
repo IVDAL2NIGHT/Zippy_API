@@ -11,10 +11,13 @@ import lombok.experimental.Accessors;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.util.List;
+
+import static org.springframework.data.mongodb.core.mapping.FieldType.DECIMAL128;
 
 @Document
 @Data
@@ -26,6 +29,7 @@ public class BillingInformation {
     private ObjectId id;
     private List<Card> cards;
     @NotNull
+    @Field(targetType = DECIMAL128)
     private BigDecimal balance;
     private List<Transaction> transactions;
 

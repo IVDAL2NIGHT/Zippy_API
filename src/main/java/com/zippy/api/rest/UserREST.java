@@ -23,7 +23,7 @@ public class UserREST {
     }
 
     @PreAuthorize("#credential.userId == #id")
-    @PutMapping("/update/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<?> updateUser(@Valid @NotNull @AuthenticationPrincipal Credential credential, @PathVariable ObjectId id, @Valid @RequestBody updateUserDTO dto) {
         return ResponseEntity.ok(userService.save(
                 userService.getById(id)
@@ -37,14 +37,18 @@ public class UserREST {
     @GetMapping("/{id}")
     @PreAuthorize("#credential.userId == #id or hasAuthority('ADMIN')")
     public ResponseEntity<?> getUser(@NotNull @Valid @AuthenticationPrincipal Credential credential, @PathVariable ObjectId id) {
-        return ResponseEntity.ok(userService.getById(id));
+        try {
+            return ResponseEntity.ok(userService.getById(id));
+        }catch (Exception e) {
+            return ResponseEntity.badRequest().body("User not found");
+        }
     }
 
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<?> deleteUser(@PathVariable ObjectId id) {
         userService.delete(id);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 
 }

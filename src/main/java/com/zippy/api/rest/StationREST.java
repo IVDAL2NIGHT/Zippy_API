@@ -12,6 +12,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.stream.Collectors;
 
 
 @RestController
@@ -25,8 +28,8 @@ public class StationREST {
         this.vehicleService = vehicleService;
     }
 
-    @PreAuthorize("hasAuthority('ADMIN')")
-    @DeleteMapping("/delete/{id}")
+    //@PreAuthorize("hasAuthority('ADMIN')")
+    @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteStation(@PathVariable ObjectId id) {
         stationService.delete(id);
         return ResponseEntity.ok().build();
@@ -41,6 +44,7 @@ public class StationREST {
         ));
     }
 
+
     @PreAuthorize("hasAuthority('ADMIN')")
     @DeleteMapping("/{id}/remove-vehicle/{vehicleId}")
     public ResponseEntity<?> removeVehicleFromStation(@PathVariable ObjectId id, @PathVariable ObjectId vehicleId) {
@@ -50,38 +54,58 @@ public class StationREST {
         ));
     }
 
-    @GetMapping
-    public ResponseEntity<Station> getStationByName(@RequestParam String name) {
-        return ResponseEntity.ok(stationService.getByName(name));
+    @GetMapping("/{name}")
+    public ResponseEntity<?> getStationByName(@PathVariable String name) {
+        try{
+            return ResponseEntity.ok(stationService.getByName(name));
+        }catch(Error e){
+            return ResponseEntity.badRequest().body("Station not found");
+        }
     }
-
     @PreAuthorize("hasAuthority('ADMIN')")
     @PostMapping("/add")
     public ResponseEntity<?> addStation(@RequestBody StationDTO dto) {
-        return ResponseEntity.ok(stationService.add(
-                Station.builder()
-                        .id(new ObjectId())
-                        .name(dto.name())
-                        .capacity(dto.capacity())
-                        .vehicleStatusIds(dto.vehicleStatusIdList())
-                        .status(dto.status())
-                        .coordinates(new Double[]{dto.location().getLongitude(), dto.location().getLatitude()})
-                        .build()
-        ));
+        try {
+            Station station = stationService.add(
+                    Station.builder()
+                            .id(new ObjectId())
+                            .name(dto.name())
+                            .capacity(dto.capacity())
+                            .vehicleStatusIds(dto.vehicleStatusIdList())
+                            .status(dto.status())
+                            .coordinates(dto.coordinates())
+                            .build()
+            );
+            return ResponseEntity.created(new URI("/api/stations/" + station.getId())).body(station);
+        } catch (URISyntaxException e) {
+            return ResponseEntity.internalServerError().build();
+        }
+
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getStationById(@PathVariable ObjectId id) {
-        return ResponseEntity.ok(stationService.getById(id));
+        try {
+            return ResponseEntity.ok(stationService.getById(id));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Station not found");
+        }
     }
 
     @GetMapping("/all")
-    public ResponseEntity<GeoJsonStationCollection> allStations() {
+    public ResponseEntity<?> all() {
+        return ResponseEntity.ok(stationService.all());
+    }
+
+
+
+    @GetMapping("/all/geojson")
+    public ResponseEntity<?> allStations() {
         return ResponseEntity.ok(
                 new GeoJsonStationCollection(
                         stationService.all()
                                 .stream()
-                                .map(GeoJsonStation::new)
+                                .map(Station::toGeoJsonStation)
                                 .toArray(GeoJsonStation[]::new)
                 )
         );

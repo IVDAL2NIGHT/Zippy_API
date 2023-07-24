@@ -6,9 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zippy.api.constants.VehicleStatus;
 import com.zippy.api.document.Station;
 import com.zippy.api.document.Vehicle;
-import com.zippy.api.exception.DuplicatedVehicleException;
 import com.zippy.api.exception.StationNotFoundException;
-import com.zippy.api.exception.VehicleNotFoundException;
 import com.zippy.api.models.VehicleStatusId;
 import com.zippy.api.models.geoJsonRequest.GeoRequest;
 import com.zippy.api.models.geoJsonResponse.FeatureCollection;
@@ -23,7 +21,6 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 @Service
 public class StationService {
@@ -66,7 +63,7 @@ public class StationService {
                 .getVehicleStatusIds()
                 .stream()
                 .filter(entry -> entry.getStatus().equals(VehicleStatus.AVAILABLE))
-                .map(VehicleStatusId::get_id)
+                .map(VehicleStatusId::getId)
                 .map(vehicleService::getById)
                 .toList();
     }
@@ -75,7 +72,7 @@ public class StationService {
         return getById(id)
                 .getVehicleStatusIds()
                 .stream()
-                .map(VehicleStatusId::get_id)
+                .map(VehicleStatusId::getId)
                 .toList();
     }
 

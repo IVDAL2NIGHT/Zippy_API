@@ -2,6 +2,7 @@ package com.zippy.api.document;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.zippy.api.constants.StationStatus;
+import com.zippy.api.models.GeoJsonStation;
 import com.zippy.api.models.VehicleStatusId;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,7 +12,6 @@ import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Document
@@ -35,8 +35,12 @@ public class Station {
     }
 
     public Station removeVehicleStatusId(ObjectId VehicleId) {
-        this.vehicleStatusIds = this.vehicleStatusIds.stream().filter(vehicleStatusId -> !vehicleStatusId.get_id().equals(VehicleId)).toList();
+        this.vehicleStatusIds = this.vehicleStatusIds.stream().filter(vehicleStatusId -> !vehicleStatusId.getId().equals(VehicleId)).toList();
         return this;
+    }
+
+    public static GeoJsonStation toGeoJsonStation(Station station) {
+        return new GeoJsonStation(station);
     }
 
 }
