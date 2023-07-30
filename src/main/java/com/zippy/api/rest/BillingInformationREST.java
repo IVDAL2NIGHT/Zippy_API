@@ -25,7 +25,7 @@ public class BillingInformationREST {
         this.userService = userService;
     }
 
-    @GetMapping("/get/{id}")
+    @GetMapping("/{id}")
     @PreAuthorize("#credential.userId == #id")
     public ResponseEntity<?> getBillingInformation(@AuthenticationPrincipal Credential credential, @PathVariable ObjectId id) {
         return ResponseEntity.ok(billingInformationService.get(userService
