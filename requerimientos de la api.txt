@@ -20,10 +20,10 @@ Obtener estacion por nombre
 
 Viajes:
 
-Crear nuevo viaje
++ Crear nuevo viaje
 Crear reserva viaje (no olvidar que internmente la reserva debe pasar a expirado si pasan más del DEADLINE base de datos)
 Cancelar viaje (cambiar estado de viaje y el de patineta)
-Finalizar viaje
++Finalizar viaje
 **Calcular ruta**
 Obtener viaje por user_id
 Obtener viaje por vehicle_id

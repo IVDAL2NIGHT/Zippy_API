@@ -34,10 +34,10 @@ public class VehicleService {
     }
 
     public Vehicle updateStatus(ObjectId id, VehicleStatus status) throws VehicleNotFoundException {
-        Vehicle vehicle = getById(id);
-        vehicle.setStatus(status);
-        return save(vehicle);
-    }
+            Vehicle vehicle = getById(id);
+            vehicle.setStatus(status);
+            return save(vehicle);
+        }
 
     public Vehicle getById(ObjectId id) throws VehicleNotFoundException {
         return vehicleRepository.findById(id)

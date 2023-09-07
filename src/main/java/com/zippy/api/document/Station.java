@@ -2,14 +2,14 @@ package com.zippy.api.document;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.zippy.api.constants.StationStatus;
+import com.zippy.api.models.GeoJsonStation;
 import com.zippy.api.models.VehicleStatusId;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
-import lombok.RequiredArgsConstructor;
 import lombok.experimental.Accessors;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.List;
@@ -17,16 +17,30 @@ import java.util.List;
 @Document
 @Data
 @AllArgsConstructor
-@RequiredArgsConstructor
+@Builder
 @Accessors(chain = true)
 public class Station {
     @Id
     private ObjectId id;
     private String name;
     @JsonIgnore
-    private GeoJsonPoint location;
+    private Double[] coordinates;
     private int capacity;
     private List<VehicleStatusId> vehicleStatusIds;
     private StationStatus status;
+
+    public Station addVehicleStatusId(VehicleStatusId vehicleStatusId) {
+        this.vehicleStatusIds.add(vehicleStatusId);
+        return this;
+    }
+
+    public Station removeVehicleStatusId(ObjectId VehicleId) {
+        this.vehicleStatusIds = this.vehicleStatusIds.stream().filter(vehicleStatusId -> !vehicleStatusId.getId().equals(VehicleId)).toList();
+        return this;
+    }
+
+    public static GeoJsonStation toGeoJsonStation(Station station) {
+        return new GeoJsonStation(station);
+    }
 
 }

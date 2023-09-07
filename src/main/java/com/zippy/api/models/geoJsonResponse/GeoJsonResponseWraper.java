@@ -1,11 +1,12 @@
 package com.zippy.api.models.geoJsonResponse;
 
-import lombok.Data;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 import lombok.experimental.Accessors;
 
-@RequiredArgsConstructor
 @Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @Accessors(chain = true, fluent = true)
 public class GeoJsonResponseWraper {
     private FeatureCollection featureCollection;

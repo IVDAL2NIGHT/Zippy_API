@@ -11,10 +11,10 @@ import org.springframework.data.mongodb.MongoTransactionManager;
 import org.springframework.data.mongodb.config.AbstractMongoClientConfiguration;
 import org.springframework.data.mongodb.core.MongoTemplate;
 
-import java.util.TimeZone;
 
 @Configuration
 public class Config extends AbstractMongoClientConfiguration {
+
     @Value("${spring.data.mongodb.database}")
     private String databaseName;
     @Value("${spring.data.mongodb.uri}")
@@ -46,8 +46,4 @@ public class Config extends AbstractMongoClientConfiguration {
         return new MongoTransactionManager(dbFactory);
     }
 
-    @Bean
-    public void setTimeZone() {
-        TimeZone.setDefault(TimeZone.getTimeZone("America/Bogota"));
-    }
 }

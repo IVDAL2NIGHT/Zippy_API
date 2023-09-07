@@ -1,17 +1,21 @@
 package com.zippy.api.dto;
 
+
 import com.zippy.api.constants.VehicleStatus;
 import com.zippy.api.constants.VehicleType;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.experimental.Accessors;
+import lombok.*;
 
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 @AllArgsConstructor
-@Accessors(fluent = true, chain = false)
+@NoArgsConstructor
+@Setter
 @Getter
 public class VehicleDTO {
+    @NotNull
     private VehicleType type;
     private String model;
     @NotBlank
@@ -19,8 +23,9 @@ public class VehicleDTO {
     @NotBlank
     private String gpsSerial;
     private VehicleStatus status;
-    private String startUpDate;
-    @NotBlank
+    @NotNull
     private boolean isElectric;
+    @Min(0)
+    @Max(100)
     private int battery;
 }

@@ -22,6 +22,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @RequiredArgsConstructor
+@Builder
 @Accessors(chain = true)
 public class Credential implements UserDetails {
     @Id

@@ -12,7 +12,5 @@ import java.util.List;
 @RequiredArgsConstructor
 @Accessors(fluent = false, chain = true)
 public class Wallet {
-    @NotNull
-    private BigDecimal balance;
-    private List<Transaction> transactions;
+
 }

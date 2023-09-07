@@ -27,6 +27,11 @@ public class CredentialREST {
         this.authService = authService;
     }
 
+    @GetMapping("/check/{username}")
+    public ResponseEntity<?> checkUsername(@PathVariable String username) {
+        return ResponseEntity.ok(credentialService.existsByUsername(username));
+    }
+
     // This endpoint returns the currently authenticated credential
     @GetMapping("/me")
     public ResponseEntity<?> me(@AuthenticationPrincipal Credential credential) {
@@ -37,13 +42,17 @@ public class CredentialREST {
     @GetMapping("/{id}")
     @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<?> me(@PathVariable ObjectId id) {
-        return ResponseEntity.ok(credentialService.findById(id));
+        try{
+            return ResponseEntity.ok(credentialService.getById(id));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @PutMapping("/update/")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     public ResponseEntity<?> updateCredential(@NotNull @AuthenticationPrincipal Credential credential, @NotNull @Valid @RequestBody UpdateDTO dto) {
-        return ResponseEntity.ok(credentialService.updateCredential(credential
+        return ResponseEntity.ok(credentialService.save(credential
                 .setEmail(dto.newEmail())
                 .setUsername(dto.newUsername())
         ));
@@ -53,18 +62,23 @@ public class CredentialREST {
     @PutMapping("/update/password/")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     public ResponseEntity<?> changePassword(@NotNull @AuthenticationPrincipal Credential credential, @NotNull @Valid @RequestBody String newPassword) {
-        return ResponseEntity.ok(credentialService.updateCredential(
+        return ResponseEntity.ok(credentialService.save(
                 credential.setPassword(passwordEncoder.encode(newPassword))
         ));
     }
 
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<?> delete(@NotNull @AuthenticationPrincipal Credential credential, @NotNull @RequestBody String password) {
+    @PreAuthorize("#credential.userId == #id or hasAuthority('ADMIN')")
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> delete(
+            @NotNull @AuthenticationPrincipal Credential credential,
+            @NotNull @RequestBody String password,
+            @PathVariable ObjectId id
+    ) {
         if (!passwordEncoder.matches(password, credential.getPassword())) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.badRequest().body("Password is incorrect");
         }
-        credentialService.deleteCredential(credential);
         authService.deleteRefreshTokenByOwner_Id(credential.getId());
+        credentialService.delete(credential);
         return ResponseEntity.ok().build();
     }
 }

@@ -23,17 +23,24 @@ public class CredentialService implements UserDetailsService {
                 .orElseThrow(() -> new UsernameNotFoundException("username not found"));
     }
 
-    public Credential findById(ObjectId id) {
+    public Boolean existsByUsername(String username) {
+        return credentialRepository.existsByUsername(username);
+    }
+    public Credential add(Credential credential) {
+        return credentialRepository.insert(credential);
+    }
+
+    public Credential save(Credential credential) {
+        return credentialRepository.save(credential);
+    }
+
+    public Credential getById(ObjectId id) throws  UsernameNotFoundException {
         return credentialRepository.findById(id)
                 .orElseThrow(() -> new UsernameNotFoundException("user id not found"));
     }
 
-    public void deleteCredential(Credential credential) {
+    public void delete(Credential credential) {
         userService.delete(credential.getUserId());
         credentialRepository.deleteById(credential.getId());
-    }
-
-    public Credential updateCredential(Credential credential) {
-        return credentialRepository.save(credential);
     }
 }
